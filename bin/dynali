@@ -8,7 +8,7 @@ require '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.
 
 $argvReader = new IDCT\Cli\ArgvReader();
 $command = $argvReader->getArgument(0);
-$commands = ['ip', 'install', 'add', 'remove', 'status', 'update', 'update-all', 'list'];
+$commands = ['ip', 'install', 'add', 'remove', 'status', 'update', 'update-all', 'list', 'changepassword'];
 if (!in_array($command, $commands)) {
     echo 'Please provide one of the following commands as the first argument: ' . join(',', $commands) . PHP_EOL;
     exit(-1);
@@ -99,7 +99,28 @@ switch ($command) {
         }
 
         unlink('job.run');
+        break;
+    case 'changepassword':
+        $hostname = $argvReader->getArgument(1);
+        $username = $argvReader->getArgument(2);
+        $password = $argvReader->getArgument(3);
+        $newpassword = $argvReader->getArgument(4);
 
+        if ($hostname === null || $username === null || $password === null || $newpassword === null) {
+            echo "Usage:" . PHP_EOL;
+            echo "./dynali changepassword <hostname> <username> <password> <new password>" . PHP_EOL;
+            exit(-9);
+        }
+
+        echo 'Changing password for `' . $hostname . '`: ';
+        try {
+            $response = $client->changePassword($hostname, $username, $password, $newpassword);
+            if ($response === true) {
+                echo '[OK]' . PHP_EOL;
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage() . PHP_EOL;
+        }
         break;
     case 'update':
         $hostname = $argvReader->getArgument(1);
