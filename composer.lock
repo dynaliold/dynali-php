@@ -1,0 +1,56 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "4cd5bf89d48e55c89e7e0f2e903f6dbf",
+    "packages": [
+        {
+            "name": "idct/php-basic-argv-reader",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ideaconnect/php-basic-argv-reader.git",
+                "reference": "cb5abc57036ef97c55d7953153a741dd897906ea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ideaconnect/php-basic-argv-reader/zipball/cb5abc57036ef97c55d7953153a741dd897906ea",
+                "reference": "cb5abc57036ef97c55d7953153a741dd897906ea",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "IDCT\\Cli\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bartosz Pacholek",
+                    "email": "bartosz@idct.pl"
+                }
+            ],
+            "description": "Basic Argv reader for PHP to avoid usage of Symfony Console in projects which do not require it's advanced features.",
+            "time": "2018-10-24T00:14:37+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "idct/php-basic-argv-reader": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.4.0",
+        "ext-json": "*"
+    },
+    "platform-dev": []
+}

@@ -1,0 +1,39 @@
+{
+    "name": "dynali/dynali-php",
+    "description": "DynAli PHP Library: allows interaction with DynAli's PHP NICE JSON Api.",
+    "type": "library",
+    "keywords": [
+        "php",
+        "ddns",
+        "json",
+        "dns",
+        "dyndns",
+        "dynamicdns"
+    ],
+    "homepage": "https://dynali.net/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "IDCT Bartosz Pachołek",
+            "email": "bartosz@idct.pl",
+            "role": "lead"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/dynali/dynali-php/issues"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "ext-json": "*",
+        "idct/php-basic-argv-reader": "dev-master"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ],
+        "psr-4": {
+            "Dynali\\": "lib/"
+        }
+    }
+}
