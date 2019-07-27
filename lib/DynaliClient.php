@@ -98,10 +98,8 @@ class DynaliClient
         }
 
         if ($ip === self::AUTODETECT_IP) {
-            $ip = static::myIp();
-        }
-
-        if ((filter_var($ip, FILTER_VALIDATE_IP)) === false) {
+            $ip = 'auto';
+        } elseif ((filter_var($ip, FILTER_VALIDATE_IP)) === false) {
             throw new InvalidArgumentException('Invalid IP. Provided: `' . (string) $ip . '`.');
         }
 
