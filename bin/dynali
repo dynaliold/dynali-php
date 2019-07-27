@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
 use Dynali\DynaliClient;
@@ -48,6 +48,10 @@ switch ($command) {
     case 'ip':
         echo $client->myIp() . PHP_EOL;
         break;
+    case 'install':
+        echo "Please add to Crontab:" . PHP_EOL;
+        echo '* * * * * cd ' . dirname(__FILE__) . ' && ./dynali update-all 2>&1 > dynali.log' . PHP_EOL;
+        break;
     case 'status':
         $hostname = $argvReader->getArgument(1);
         if ($hostname === null) {
@@ -83,10 +87,18 @@ switch ($command) {
 
         break;
     case 'update-all':
+        if (file_exists('job.run')) {
+            echo 'Exitting: previous job still running...' . PHP_EOL;
+            exit(-10);
+        }
+
+        file_put_contents('job.run', date('u'));
         echo 'Testing ' . count($hostnames) . ' hostnames...' . PHP_EOL;
         foreach ($hostnames as $hostname => $data) {
             update($hostname, $data['u'], $data['p']);
         }
+
+        unlink('job.run');
 
         break;
     case 'update':
