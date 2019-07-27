@@ -93,7 +93,7 @@ class DynaliStatus
      */
     public function getStatusMessage()
     {
-        return $this->message;
+        return $this->statusMessage;
     }
 
     /**
@@ -194,7 +194,7 @@ class DynaliStatus
         $this->hostname = $hostname;
         $this->ip = $ip;
         $this->status = $status;
-        $this->$statusMessage = $statusMessage;
+        $this->statusMessage = $statusMessage;
         $this->expiryDate = $expiryDate;
         $this->creationDate = $creationDate;
         $this->lastUpdateDate = $lastUpdateDate;
