@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
 use Dynali\DynaliClient;
@@ -8,7 +8,7 @@ require '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.
 
 $argvReader = new IDCT\Cli\ArgvReader();
 $command = $argvReader->getArgument(0);
-$commands = ['ip', 'install', 'add', 'remove', 'status', 'update', 'update-all', 'list'];
+$commands = ['ip', 'install', 'add', 'remove', 'status', 'update', 'update-all', 'list', 'changepassword'];
 if (!in_array($command, $commands)) {
     echo 'Please provide one of the following commands as the first argument: ' . join(',', $commands) . PHP_EOL;
     exit(-1);
@@ -48,6 +48,10 @@ switch ($command) {
     case 'ip':
         echo $client->myIp() . PHP_EOL;
         break;
+    case 'install':
+        echo "Please add to Crontab:" . PHP_EOL;
+        echo '* * * * * cd ' . dirname(__FILE__) . ' && ./dynali update-all 2>&1 > dynali.log' . PHP_EOL;
+        break;
     case 'status':
         $hostname = $argvReader->getArgument(1);
         if ($hostname === null) {
@@ -83,11 +87,40 @@ switch ($command) {
 
         break;
     case 'update-all':
+        if (file_exists('job.run')) {
+            echo 'Exitting: previous job still running...' . PHP_EOL;
+            exit(-10);
+        }
+
+        file_put_contents('job.run', date('u'));
         echo 'Testing ' . count($hostnames) . ' hostnames...' . PHP_EOL;
         foreach ($hostnames as $hostname => $data) {
             update($hostname, $data['u'], $data['p']);
         }
 
+        unlink('job.run');
+        break;
+    case 'changepassword':
+        $hostname = $argvReader->getArgument(1);
+        $username = $argvReader->getArgument(2);
+        $password = $argvReader->getArgument(3);
+        $newpassword = $argvReader->getArgument(4);
+
+        if ($hostname === null || $username === null || $password === null || $newpassword === null) {
+            echo "Usage:" . PHP_EOL;
+            echo "./dynali changepassword <hostname> <username> <password> <new password>" . PHP_EOL;
+            exit(-9);
+        }
+
+        echo 'Changing password for `' . $hostname . '`: ';
+        try {
+            $response = $client->changePassword($hostname, $username, $password, $newpassword);
+            if ($response === true) {
+                echo '[OK]' . PHP_EOL;
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage() . PHP_EOL;
+        }
         break;
     case 'update':
         $hostname = $argvReader->getArgument(1);

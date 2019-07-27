@@ -178,4 +178,50 @@ class DynaliClient
 
         return new DynaliStatus($hostname, $dynaliPayload['ip'], intval($dynaliPayload['status']), $dynaliPayload['status_message'], new DateTime($dynaliPayload['expiry_date']), new DateTime($dynaliPayload['created']), new DateTime($dynaliPayload['last_update']), new DateTime());
     }
+
+    /**
+     * Updates password assigned to hostname.
+     *
+     * @param string $hostname
+     * @param string $username
+     * @param string $password
+     * @param string $newpassword
+     * @throws InvalidArgumentException
+     * @throws DynaliException
+     * @return boolean
+     */
+    public function changePassword($hostname, $username, $password, $newpassword)
+    {
+        if (!is_string($hostname) || empty($hostname)) {
+            throw new InvalidArgumentException('Invalid or missing hostname.');
+        }
+
+        if (!is_string($username) || empty($username)) {
+            throw new InvalidArgumentException('Invalid or missing username.');
+        }
+
+        if (!is_string($password) || empty($password)) {
+            throw new InvalidArgumentException('Invalid or missing password.');
+        }
+
+        if (!is_string($newpassword) || empty($newpassword)) {
+            throw new InvalidArgumentException('Invalid or missing new password.');
+        }
+
+        $dynaliDataRaw = static::execute('changepassword', ['hostname' => $hostname, 'username' => $username, 'password' => md5($password), 'newpassword' => md5($newpassword)]);
+
+        if (!isset($dynaliDataRaw['status']) || $dynaliDataRaw['status'] !== 'success') {
+            if (!isset($dynaliDataRaw['message'])) {
+                throw new DynaliException(-804, 'Invalid output data. Missing message.');
+            }
+
+            throw new DynaliException($dynaliDataRaw['code'], $dynaliDataRaw['message']);
+        }
+
+        if ($dynaliDataRaw['status'] !== 'success') { //failure
+            throw new DynaliException($dynaliDataRaw['code'], $dynaliDataRaw['message']);
+        }
+
+        return true;
+    }
 }
