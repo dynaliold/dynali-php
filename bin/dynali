@@ -56,6 +56,7 @@ switch ($command) {
         $hostname = $argvReader->getArgument(1);
         if ($hostname === null) {
             echo "Please provide hostname as the second argument." . PHP_EOL;
+            exit(-11);
         }
 
         if (!isset($hostnames[$hostname])) {
