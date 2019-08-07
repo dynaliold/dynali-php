@@ -7,8 +7,11 @@ use InvalidArgumentException;
 
 class DynaliClient
 {
-    static private $endpoint = 'https://api.dynali.net/nice/';
+    static private $endpointLive = 'https://api.dynali.net/nice/';
+    static private $endpointDebug = 'https://debug.dynali.net/nice/';
     const AUTODETECT_IP = true;
+    const ENV_LIVE = false;
+    const ENV_DEBUG = true;
 
     /**
      * Send the actual POST request without using PHP's curl functions.
@@ -18,7 +21,7 @@ class DynaliClient
      * @return array Parsed JSON resposne
      * @throws Exception If the request fails or JSON cannot be parsed.
      */
-    static protected function execute($action, $payload = [])
+    static protected function execute($action, $payload = [], $useDevEnv = false)
     {
         $postVars = ['action' => $action];
         if (!empty($payload)) {
@@ -34,7 +37,7 @@ class DynaliClient
             )
         );
         $streamContext  = stream_context_create($options);
-        $result = file_get_contents(static::$endpoint, false, $streamContext);
+        $result = file_get_contents(($useDevEnv ? static::$endpointDebug : static::$endpointLive), false, $streamContext);
         if ($result === false) {
             $error = error_get_last();
             throw new RuntimeException('Request failed: ' . $error['message']);
@@ -79,11 +82,12 @@ class DynaliClient
      * @param string $password
      * @param string|boolean $ip if set to true (self::AUTODETECT_IP) will attempt
      * to detect client's IP.
+     * @param boolean $useDevEnv check ENV_* consts
      * @throws InvalidArgumentException
      * @throws DynaliException
      * @return boolean
      */
-    static public function update($hostname, $username, $password, $ip = self::AUTODETECT_IP)
+    static public function update($hostname, $username, $password, $ip = self::AUTODETECT_IP, $useDevEnv = self::ENV_LIVE)
     {
         if (!is_string($hostname) || empty($hostname)) {
             throw new InvalidArgumentException('Invalid or missing hostname.');
@@ -103,7 +107,7 @@ class DynaliClient
             throw new InvalidArgumentException('Invalid IP. Provided: `' . (string) $ip . '`.');
         }
 
-        $dynaliDataRaw = static::execute('update', ['username' => $username, 'password' => md5($password), 'myip' => $ip, 'hostname' => $hostname]);
+        $dynaliDataRaw = static::execute('update', ['username' => $username, 'password' => md5($password), 'myip' => $ip, 'hostname' => $hostname], $useDevEnv);
 
         if (!isset($dynaliDataRaw['status']) || $dynaliDataRaw['status'] !== 'success') {
             if (!isset($dynaliDataRaw['message'])) {
@@ -128,11 +132,12 @@ class DynaliClient
      * @param string $hostname
      * @param string $username
      * @param string $password
+     * @param boolean $useDevEnv check ENV_* consts
      * @throws InvalidArgumentException
      * @throws DynaliException
      * @return DynaliStatus
      */
-    static public function status($hostname, $username, $password)
+    static public function status($hostname, $username, $password, $useDevEnv = self::ENV_LIVE)
     {
         if (!is_string($hostname) || empty($hostname)) {
             throw new InvalidArgumentException('Invalid or missing hostname.');
@@ -146,7 +151,7 @@ class DynaliClient
             throw new InvalidArgumentException('Invalid or missing password.');
         }
 
-        $dynaliDataRaw = static::execute('status', ['username' => $username, 'password' => md5($password), 'hostname' => $hostname]);
+        $dynaliDataRaw = static::execute('status', ['username' => $username, 'password' => md5($password), 'hostname' => $hostname], $useDevEnv);
 
         if (!isset($dynaliDataRaw['status']) || $dynaliDataRaw['status'] !== 'success') {
             if (!isset($dynaliDataRaw['message'])) {
@@ -184,11 +189,12 @@ class DynaliClient
      * @param string $username
      * @param string $password
      * @param string $newpassword
+     * @param boolean $useDevEnv check ENV_* consts
      * @throws InvalidArgumentException
      * @throws DynaliException
      * @return boolean
      */
-    public function changePassword($hostname, $username, $password, $newpassword)
+    public function changePassword($hostname, $username, $password, $newpassword, $useDevEnv = self::ENV_LIVE)
     {
         if (!is_string($hostname) || empty($hostname)) {
             throw new InvalidArgumentException('Invalid or missing hostname.');
@@ -206,7 +212,7 @@ class DynaliClient
             throw new InvalidArgumentException('Invalid or missing new password.');
         }
 
-        $dynaliDataRaw = static::execute('changepassword', ['hostname' => $hostname, 'username' => $username, 'password' => md5($password), 'newpassword' => md5($newpassword)]);
+        $dynaliDataRaw = static::execute('changepassword', ['hostname' => $hostname, 'username' => $username, 'password' => md5($password), 'newpassword' => md5($newpassword)], $useDevEnv);
 
         if (!isset($dynaliDataRaw['status']) || $dynaliDataRaw['status'] !== 'success') {
             if (!isset($dynaliDataRaw['message'])) {
